@@ -14,7 +14,7 @@ A few words on Revive:
 
 Main components:
 * Postal bus (https://github.com/postaljs/postal.js), at your will, can be easily replace by others
-* Revive (https://github.com/ersh112356/)- to manage the flow of data
+* Revive- to manage the flow of data
 * Revive- to manage the states (light version of Redux- without all the hassle)
 * Bootstrap- to run the templating- total optional and can easily be replaced by others
 * JQuery to run the Widgets
