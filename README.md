@@ -4,7 +4,7 @@ A light event driven based framework
 A few words on Revive:
 * Revive- let’s take the good parts and get rid off the complexity 
 * SPA-Server based on Event Bus 
-* Messages are pushed toward the SPA via WebSocket
+* Messages are pushed toward the SPA via a WebSocket
 * Internal modules are communicating via internal Event Bus
 * Easy to save/restore states (we’ll get into this in details)
 * No need to pre-compilation 
