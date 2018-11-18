@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bootstrap Template</title>
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional Bootstrap Theme -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container-fluid">
+        <!-- Insert/Drop Grid Row codes below -->
+        <div class="row">
+            <!-- Insert/Drop Grid Column codes below-->
+            <div class="col-xs-1">
+                <button id="click_me" type="button" class="btn btn-xs btn-default">Click-Me</button>
+                <!--<button id="click_me_2" type="button" class="btn btn-xs btn-info disabled" revive-data='{"channel":"orders","topic":"clicks","data":{"sku":"blah","qty":21}}' revive-type="click" revive-fn="test">Second-Click</button>-->
+                <!-- ***** That puts "annotations" instead of using the API, so we get a more clear and less verbal code. ***** -->
+                <button id="click_me_2" type="button" class="btn btn-xs btn-info disabled" revive-data='{"channel":"orders","topic":"clicks","data":{"sku":"blah","qty":21}}' revive-type="click">Second-Click</button>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
+    <script src="js/postal.min.js"></script>
+    <script src="js/revive.js"></script>
+    <script>
+        // Declare a new Revive object that runs the full lifecycle of a model.
+        // Use the one that was declared in Revive.
+        //var revive = new Revive(this.postal);
+
+        $(document).ready(function(){
+            //$("#click_me_2").attr('disabled','disabled');
+            
+            revive.on("click_me","click", function(){
+                alert("in");
+                // Send a message.
+                revive.emit("orders","clicks",{sku:"blah",qty:21});
+                
+                // We make dummy stores then restore back the states.
+                var state1 = revive.asState("click_me");
+                state1.class = "btn btn-xs btn-default disabled";
+                state1.html = "Click-Me 2";
+                
+                revive.store("state_1",state1);
+                revive.restore("state_1");
+                alert("done restoring step I...");
+                
+                //$("#click_me_2").removeAttr('disabled');
+                $("#click_me_2").attr('disabled','disabled');
+                
+                state1.html = "Click-Me 3";
+                
+                var state2 = revive.asState("click_me_2"); 
+                state2.html = "Second-Click 2";
+                
+                $("#click_me_2").removeAttr('disabled');
+                //$("#click_me_2").attr('disabled','disabled');
+                
+                revive.store("state_2",[state1,state2]);
+                revive.restoreAll("state_2");
+                                
+                alert("done restoring... "+JSON.stringify([state1,state2]));
+                // Chaining.
+            }).on("click_me_2","click",function(event){
+                alert(event);
+                // Hook to the topic to listen to.
+            }).apply("orders","clicks",function(data,envelope){
+                //alert("in 2: "+data.sku+" "+JSON.stringify(envelope));
+                $("#click_me_2").removeClass("disabled").addClass("active");
+            });
+            
+            // Must be declared global.
+            window.test = function(){
+                alert("test");
+            };
+	});
+    </script>
+  </body>
+</html>
