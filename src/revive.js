@@ -308,7 +308,7 @@ revive = new Revive(this.postal);
                     // AKA, window.fn = function().
                     var fun = window[fn];
 
-                    if(typeof fun==='function')
+                    if(typeof fun === 'function')
                     {
                         fun(event,data);
                         event.preventDefault();
