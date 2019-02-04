@@ -27,7 +27,7 @@ var Revive = function(brokerImpl){
     /**
      * Introduce a new broker here.
      * 
-     * @param brokerImpl- the broker.
+     * @param brokerImpl - the broker.
      * 
      * @return this object for chaining.
      */
@@ -41,9 +41,9 @@ var Revive = function(brokerImpl){
     /**
      * Try to emit the model with a new message.
      * 
-     * @param channel- the channel to register to.
-     * @param topic- the topic in the channel to register to.
-     * @param data- the data to send to.
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param data - the data to send to.
      * 
      * @return this object for chaining.
      */
@@ -61,9 +61,9 @@ var Revive = function(brokerImpl){
     /**
      * Try to apply on a registration to the model.
      * 
-     * @param channel- the channel to register to.
-     * @param topic- the topic in the channel to register to.
-     * @param callback- the callback to apply by.
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param callback - the callback to apply by.
      * 
      * @return this object for chaining.
      */
@@ -83,9 +83,9 @@ var Revive = function(brokerImpl){
     /**
      * A quick wrapper for catching events from an element.
      * 
-     * @param id- the id of the element that triggers the event.
-     * @param type- the type of the event to catch.
-     * @param fn- the callback function.
+     * @param id - the id of the element that triggers the event.
+     * @param type - the type of the event to catch.
+     * @param fn - the callback function.
      * 
      * @return this object for chaining.
      */
@@ -111,7 +111,7 @@ var Revive = function(brokerImpl){
     /**
      * Returns the state of a given element.
      * 
-     * @param id- the id of the lement.
+     * @param id - the id of the lement.
      *  
      * @return the state of a given element.
      */
@@ -141,8 +141,8 @@ var Revive = function(brokerImpl){
      * Add a new state to the store.
      * Might be a single state, or multiple states.
      * 
-     * @param label- the label tied to the state.
-     * @param state- the state itself.
+     * @param label - the label tied to the state.
+     * @param state - the state itself.
      * 
      * @return this object for chaining.
      */
@@ -156,7 +156,7 @@ var Revive = function(brokerImpl){
     /**
      * Restore a batch of elements.
      * 
-     * @param label- the label of the states to restore.
+     * @param label - the label of the states to restore.
      * 
      * @return this object for chaining.
      */
@@ -180,7 +180,7 @@ var Revive = function(brokerImpl){
     /**
      * Restore a specified state.
      * 
-     * @param label- the label which is tied to the state.
+     * @param label - the label which is tied to the state.
      * 
      * @return this object for chaining.
      */
@@ -189,13 +189,13 @@ var Revive = function(brokerImpl){
         var state = states[label];
         restoreState(state);
         
-        return this;;
+        return this;
     };
     
     /**
      * Restore a given state.
      * 
-     * @param state- the state to restore.
+     * @param state - the state to restore.
      */
     var restoreState = function(state){
         
@@ -205,9 +205,8 @@ var Revive = function(brokerImpl){
         {
             html(id,state.html);
         }
-        
-        if(state.text)
-        {
+        else if(state.text)
+        {   // Both can't go thogether.
             text(id,state.text);
         }
         
@@ -231,8 +230,8 @@ var Revive = function(brokerImpl){
     /**
      * Set the html attribute into a given element.
      * 
-     * @param id- the id of the element to set in.
-     * @param html- the html to set.
+     * @param id - the id of the element to set in.
+     * @param html - the html to set.
      */
     var html = function(id, html){
 
@@ -242,8 +241,8 @@ var Revive = function(brokerImpl){
     /**
      * Set the text attribute into a given element.
      * 
-     * @param id- the id of the element to set in.
-     * @param text- the text to set.
+     * @param id - the id of the element to set in.
+     * @param text - the text to set.
      */
     var text = function(id, text){
 
@@ -253,8 +252,8 @@ var Revive = function(brokerImpl){
     /**
      * Set css attribute into a given element.
      * 
-     * @param id- the id of the element to set in.
-     * @param css- the css to add.
+     * @param id - the id of the element to set in.
+     * @param css - the css to add.
      */
     var css = function(id, css){
 
@@ -264,9 +263,9 @@ var Revive = function(brokerImpl){
     /**
      * Try to sync a given attribute into the element.
      * 
-     * @param id- the id of the element.
-     * @param name- the name of the attribute.
-     * @param attr- the attribute itself.
+     * @param id - the id of the element.
+     * @param name - the name of the attribute.
+     * @param attr - the attribute itself.
      */
     var sync = function(id, name, attr){
         
