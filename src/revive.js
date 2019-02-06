@@ -94,6 +94,41 @@ var Revive = function(brokerImpl){
     };
     
     /**
+     * Try to apply on a registration to the model.
+     * 
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param identification - the identification of the client.
+     * @param callback - the callback to apply by.
+     * 
+     * @return this object for chaining.
+     */
+    this.applyAsClient = function(channel, topic, identification, callback){
+        
+        var subscription = broker.subscribe({
+            channel: channel,
+            topic: topic,
+            callback: function(data,envelope){
+                callback(data,envelope);
+            }
+        });
+        
+        subscription.identification = identification;
+        var key = channel+"."+topic;
+        var arr = clients[key];
+        
+        if(!arr)
+        {
+            arr = [];
+        }
+        
+        arr.push(subscription);
+        clients[key] = arr;
+        
+        return this;
+    };
+    
+    /**
      * Try to unsubscribe to scpecified channel and topic.
      * 
      * @param channel - the channel to unsubscribe to.
@@ -117,6 +152,48 @@ var Revive = function(brokerImpl){
             }
             
             clients[key] = [];
+        }
+        catch(error)
+        {
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Try to unsubscribe a given client from scpecified channel and topic.
+     * 
+     * @param channel - the channel to unsubscribe to.
+     * @param topic - the topic to unsubscribe to.
+     * @param identification - the identification of the client to remove.
+     * 
+     * @returns this object for chaining. 
+     */
+    this.unapplyByIdentification = function(channel, topic, identification){
+        
+        try
+        {
+            var key = channel+"."+topic;
+            var arr = clients[key];
+            
+            if(arr)
+            {
+                for(var i=0;i<arr.length;i++)
+                {
+                    var sb = arr[i];
+                    
+                    if(sb)
+                    {
+                        if(sb.identification===identification)
+                        {
+                            sb.unsubscribe();
+                            arr.splice(i,2);
+                            
+                            break;
+                        }
+                    }
+                }
+            }
         }
         catch(error)
         {
