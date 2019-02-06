@@ -11,6 +11,8 @@ var Revive = function(brokerImpl){
     var states = {};
     /** Holds the broker. */
     var broker = brokerImpl;
+    /** Holds the registered clients. */
+    var clients = {};
  
     /**
      * Clean the store.
@@ -69,13 +71,56 @@ var Revive = function(brokerImpl){
      */
     this.apply = function(channel, topic, callback){
         
-        broker.subscribe({
+        var subscription = broker.subscribe({
             channel: channel,
             topic: topic,
             callback: function(data,envelope){
                 callback(data,envelope);
             }
         });
+        
+        var key = channel+"."+topic;
+        var arr = clients[key];
+        
+        if(!arr)
+        {
+            arr = [];
+        }
+        
+        arr.push(subscription);
+        clients[key] = arr;
+        
+        return this;
+    };
+    
+    /**
+     * Try to unsubscribe to scpecified channel and topic.
+     * 
+     * @param channel - the channel to unsubscribe to.
+     * @param topic - the topic to unsubscribe to.
+     * 
+     * @returns this object for chaining. 
+     */
+    this.unapply = function(channel, topic){
+        
+        try
+        {
+            var key = channel+"."+topic;
+            var arr = clients[key];
+            
+            if(arr)
+            {
+                for(var i=0;i<arr.length;i++)
+                {
+                    arr[i].unsubscribe();
+                }
+            }
+            
+            clients[key] = [];
+        }
+        catch(error)
+        {
+        }
         
         return this;
     };
