@@ -65,11 +65,35 @@ var Revive = function(brokerImpl){
      * 
      * @param channel - the channel to register to.
      * @param topic - the topic in the channel to register to.
+     * @param identification - the identification of the client. Optional.
      * @param callback - the callback to apply by.
      * 
      * @return this object for chaining.
      */
-    this.apply = function(channel, topic, callback){
+    this.apply = function(channel, topic, identification, callback){
+        
+        if(typeof identification==='function')
+        {   // Actually we omitted the identification and provided with the callback.
+            applyNotIdentified(channel,topic,identification);
+        }
+        else
+        {
+            applyIdentified(channel,topic,identification,callback);
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Try to apply on a registration to the model.
+     * 
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param callback - the callback to apply by.
+     * 
+     * @return this object for chaining.
+     */
+    var applyNotIdentified = function(channel, topic, callback){
         
         var subscription = broker.subscribe({
             channel: channel,
@@ -89,8 +113,6 @@ var Revive = function(brokerImpl){
         
         arr.push(subscription);
         clients[key] = arr;
-        
-        return this;
     };
     
     /**
@@ -103,7 +125,7 @@ var Revive = function(brokerImpl){
      * 
      * @return this object for chaining.
      */
-    this.applyAsClient = function(channel, topic, identification, callback){
+    var applyIdentified = function(channel, topic, identification, callback){
         
         var subscription = broker.subscribe({
             channel: channel,
@@ -124,6 +146,27 @@ var Revive = function(brokerImpl){
         
         arr.push(subscription);
         clients[key] = arr;
+    };
+    
+    /**
+     * Try to unsubscribe to scpecified channel and topic.
+     * 
+     * @param channel - the channel to unsubscribe to.
+     * @param topic - the topic to unsubscribe to.
+     * @param identification - the identification of the client to remove. Optional.
+     * 
+     * @returns this object for chaining. 
+     */
+    this.unapply = function(channel, topic, identification){
+        
+        if(identification)
+        {
+            unapplyIdentified(channel,topic,identification);
+        }
+        else
+        {
+            unapplyNotIdentified(channel,topic);
+        }
         
         return this;
     };
@@ -133,10 +176,8 @@ var Revive = function(brokerImpl){
      * 
      * @param channel - the channel to unsubscribe to.
      * @param topic - the topic to unsubscribe to.
-     * 
-     * @returns this object for chaining. 
      */
-    this.unapply = function(channel, topic){
+    var unapplyNotIdentified = function(channel, topic){
         
         try
         {
@@ -156,8 +197,6 @@ var Revive = function(brokerImpl){
         catch(error)
         {
         }
-        
-        return this;
     };
     
     /**
@@ -166,10 +205,8 @@ var Revive = function(brokerImpl){
      * @param channel - the channel to unsubscribe to.
      * @param topic - the topic to unsubscribe to.
      * @param identification - the identification of the client to remove.
-     * 
-     * @returns this object for chaining. 
      */
-    this.unapplyByIdentification = function(channel, topic, identification){
+    var unapplyIdentified = function(channel, topic, identification){
         
         try
         {
@@ -182,15 +219,12 @@ var Revive = function(brokerImpl){
                 {
                     var sb = arr[i];
                     
-                    if(sb)
+                    if(sb.identification===identification)
                     {
-                        if(sb.identification===identification)
-                        {
-                            sb.unsubscribe();
-                            arr.splice(i,2);
-                            
-                            break;
-                        }
+                        sb.unsubscribe();
+                        arr.splice(i,1);
+
+                        break;
                     }
                 }
             }
@@ -198,8 +232,6 @@ var Revive = function(brokerImpl){
         catch(error)
         {
         }
-        
-        return this;
     };
     
     /**
