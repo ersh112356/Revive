@@ -50,9 +50,9 @@ Versions:
 
 8/2/2019
 * Version 1.02
- * Bug fixes.
- * Added the ability to reply to a message.
+  * Bug fixes.
+  * Added the ability to reply to a message.
 
 1/12/2018
 * Version 1.0
- * Initial version.
+  * Initial version.
