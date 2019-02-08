@@ -7,6 +7,8 @@
  */
 var Revive = function(brokerImpl){
  
+    /** THe value of the timeout (30 seconds). */
+    var TIMEOUT = 30000;
     /** Holds the states. */
     var states = {};
     /** Holds the broker. */
@@ -46,10 +48,29 @@ var Revive = function(brokerImpl){
      * @param channel - the channel to register to.
      * @param topic - the topic in the channel to register to.
      * @param data - the data to send to.
+     * @param callback - an optional callback to handle the reply to the message sent.
      * 
      * @return this object for chaining.
      */
-    this.emit = function(channel, topic, data){
+    this.emit = function(channel, topic, data, callback){
+        
+        if(callback)
+        {
+            var subscription = broker.subscribe({
+                channel: channel,
+                topic: topic+"_reply",
+                callback: function(data,envelope){
+                    subscription.unsubscribe();
+                    clearTimeout(t);
+                    callback(data,envelope);
+                }
+            });
+
+            // The reply is cleared after 30 seconds.
+            var t = setTimeout(function(){ 
+                subscription.unsubscribe();
+            }, TIMEOUT);
+        }
         
         broker.publish({
             channel: channel,
@@ -99,7 +120,8 @@ var Revive = function(brokerImpl){
             channel: channel,
             topic: topic,
             callback: function(data,envelope){
-                callback(data,envelope);
+                var en = new binder(envelope);
+                callback(data,en);
             }
         });
         
@@ -131,7 +153,8 @@ var Revive = function(brokerImpl){
             channel: channel,
             topic: topic,
             callback: function(data,envelope){
-                callback(data,envelope);
+                var en = new binder(envelope);
+                callback(data,en);
             }
         });
         
@@ -433,6 +456,25 @@ var Revive = function(brokerImpl){
         {   // Not exists, need to be removed. 
             elem.removeAttr(name);
         }
+    };
+    
+    /**
+     * An object to handle the functionality of a reply to a message.
+     * 
+     * @param envelope - the original envelope.
+     * 
+     * @returns the Binder objectg.
+     */
+    var binder = function(envelope){
+        
+        return {
+            reply : function(message){
+                 broker.publish({
+                    channel: envelope.channel,
+                    topic: envelope.topic+"_reply",
+                    data: message
+                });
+        }};
     };
 };
 
