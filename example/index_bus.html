@@ -20,6 +20,7 @@
             
             revive.apply("orders","clicks.1",function(data,envelope){
                 alert("in clicks.1 (1): "+data.sku+" "+JSON.stringify(envelope));
+                envelope.reply({"error":0});
             });
                
             revive.apply("orders","clicks.1",function(data,envelope){
@@ -35,7 +36,9 @@
             
             // Removes all apply calls.
             //revive.unapply("orders","clicks.1");
-            revive.emit("orders","clicks.1",{sku:"blah",qty:21});
+            revive.emit("orders","clicks.1",{sku:"blah",qty:21},function(data,envelope){
+                alert("got a reply back from the reciever "+JSON.stringify(data));
+            });
 	});
     </script>
   </body>
