@@ -45,7 +45,9 @@ What do we need Revive for?
 * Very simple to write with
 * The only dependencies are Postal (and lodash), JQuery- which is already there, usually 
 
+
 Versions:
+
 8/2/2019
 Version 1.02
 * Bug fixes.
