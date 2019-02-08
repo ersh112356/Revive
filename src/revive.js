@@ -468,6 +468,10 @@ var Revive = function(brokerImpl){
     var binder = function(envelope){
         
         return {
+            channel : envelope.channel,
+            topic : envelope.topic,
+            timeStamp : envelope.timeStamp,
+            data : envelope.data,
             reply : function(message){
                  broker.publish({
                     channel: envelope.channel,
