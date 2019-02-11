@@ -1,4 +1,6 @@
 /* 
+ * Version 1.1
+ *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
  * At default, Postal is used as the Broker, yet that can be customized.
@@ -7,14 +9,16 @@
  */
 var Revive = function(brokerImpl){
  
-    /** THe value of the timeout (30 seconds). */
+    /** THe value of the timeout (30 seconds) for replying to a message. */
     var TIMEOUT = 30000;
-    /** Holds the states. */
+    /** Holds the states that are stored here. */
     var states = {};
     /** Holds the broker. */
     var broker = brokerImpl;
-    /** Holds the registered clients. */
+    /** Holds the registered clients to the bus. */
     var clients = {};
+    /** Holds the services to discover. */
+    var services = {};
  
     /**
      * Clean the store.
@@ -255,6 +259,34 @@ var Revive = function(brokerImpl){
         catch(error)
         {
         }
+    };
+    
+    /**
+     * Try to publish a new ID of an element.
+     * 
+     * @param label - the label that tied to the ID.
+     * @param elemID - the ID of an element.
+     * 
+     * @returns this to allow chaining.
+     */
+    this.publish = function(label ,elemID){
+        
+        services[label] = elemID;
+        
+        return this;
+    };
+    
+    /**
+     * Return the ID by its label.
+     * 
+     * @param label - the label to find by.
+     * 
+     * @returns the ID.
+     * 
+     */
+    this.getRecord = function(label){
+        
+        return services[label];
     };
     
     /**
