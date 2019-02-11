@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Discovery</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script type="text/javascript" src="js/revive.js"></script>
+        <script>
+            $(document).ready(function(){
+                
+                revive.publish("some_label","some_id");
+                var id = revive.getRecord("some_label");
+                alert(id);
+            });
+            
+        </script>
+    </head>
+    <body>
+        <div>Some content</div>
+    </body>
+</html>
