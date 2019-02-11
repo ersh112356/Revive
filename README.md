@@ -15,13 +15,14 @@ A few words on Revive:
 Main components:
 * Postal bus (https://github.com/postaljs/postal.js), at your will, can be easily replace by others
 * Revive- to manage the flow of data
-* Revive- to manage the states (light version of Redux- without all the hassle)
+* Revive- to manage the states (a light version of Redux- without all the hassle)
+* Revive- to manage the service discovery (a light version of a service discovery)
 * Bootstrap- to run the templating- total optional and can easily be replaced by others
 * JQuery to run the Widgets
 
 Revive- a short introduction:
 * Open source
-* Very light, only 8k (1.8k minified)
+* Very light, only 14.4k (2.92k minified)
 * Apache license
 * Learning carve
   * At top, we need only to invoke 
@@ -47,11 +48,14 @@ What do we need Revive for?
 
 
 Versions:
+11/2/2010
+* Version 1.1
+  * Added a service discovery.
 
 8/2/2019
 * Version 1.02
   * Bug fixes.
-  * Added the ability to reply to a message.
+  * Added the ability to reply back to a message.
 
 1/12/2018
 * Version 1.0
