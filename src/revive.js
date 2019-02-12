@@ -9,7 +9,7 @@
  */
 var Revive = function(brokerImpl){
  
-    /** THe value of the timeout (30 seconds) for replying to a message. */
+    /** The value of the timeout (30 seconds) for replying to a message. */
     var TIMEOUT = 30000;
     /** Holds the states that are stored here. */
     var states = {};
