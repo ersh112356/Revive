@@ -345,6 +345,7 @@ var Revive = function(brokerImpl){
         state["title"] = elem.attr("title");
         state["checked"] = elem.attr("checked");
         state["selected"] = elem.attr("selected");
+        state["visible"] = elem.is(':visible');
         
         return state;
     };
@@ -460,6 +461,15 @@ var Revive = function(brokerImpl){
         if(state.css)
         {
             css(id,state.css);
+        }
+        
+        if(state.visible)
+        {
+            $("#"+id).show();
+        }
+        else
+        {
+            $("#"+id).hide();
         }
         
         sync(id,"class",state.class);
