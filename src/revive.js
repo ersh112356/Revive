@@ -1,5 +1,5 @@
 /* 
- * Version 1.1
+ * Version 1.2
  *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
@@ -13,6 +13,8 @@ var Revive = function(brokerImpl){
     var TIMEOUT = 30000;
     /** Holds the states that are stored here. */
     var states = {};
+    /** Holds the played states. */
+    var played = {};
     /** Holds the broker. */
     var broker = brokerImpl;
     /** Holds the registered clients to the bus. */
@@ -28,6 +30,7 @@ var Revive = function(brokerImpl){
     this.clear = function(){
         
         states = {};
+        played = {};
         
         return this;
     };
@@ -397,6 +400,41 @@ var Revive = function(brokerImpl){
         
         var state = states[label];
         restoreState(state);
+        
+        return this;
+    };
+    
+    /**
+     * Start to recored a few states to be played later.
+     * 
+     * @param label - the label which is tied to the played states.
+     * @param states - a serial of states.
+     * 
+     * @return this object for chaining.
+     */
+    this.play = function(label, states){
+        
+        played[label] = states;
+        
+        return this;
+    };
+    
+    /**
+     * Replay stored states.
+     *  
+     * @param label - the label tied to the states.
+     * 
+     * @return this object for chaining.
+     */
+    this.replay = function(label){
+        
+        var states = played[label];
+        
+        for(var i=0;i<states.length;i++)
+        {
+            var state = states[i];
+            restoreState(state);
+        }
         
         return this;
     };
