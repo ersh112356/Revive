@@ -48,7 +48,11 @@ What do we need Revive for?
 
 
 Versions:
-11/2/2010
+18/2/2019
+* Version 1.2
+ * Added palyed and replayed changes in a few elements.
+
+11/2/2019
 * Version 1.1
   * Added a service discovery.
 
