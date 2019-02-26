@@ -50,7 +50,7 @@ What do we need Revive for?
 Versions:
 18/2/2019
 * Version 1.2
- * Added palyed and replayed changes in a few elements.
+ * Added played and replayed changes on a few elements.
 
 11/2/2019
 * Version 1.1
