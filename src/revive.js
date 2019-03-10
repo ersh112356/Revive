@@ -33,6 +33,7 @@ var Revive = function(brokerImpl){
         
         states = {};
         played = {};
+        toggles = {};
         
         return this;
     };
