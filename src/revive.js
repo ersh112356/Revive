@@ -1,5 +1,5 @@
 /* 
- * Version 1.2
+ * Version 1.3
  *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
@@ -15,6 +15,8 @@ var Revive = function(brokerImpl){
     var states = {};
     /** Holds the played states. */
     var played = {};
+    /** Holds the status of toogles. */
+    var toggles = {};
     /** Holds the broker. */
     var broker = brokerImpl;
     /** Holds the registered clients to the bus. */
@@ -435,6 +437,34 @@ var Revive = function(brokerImpl){
         {
             var state = states[i];
             restoreState(state);
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Try to toggle between two labels.
+     * First call replays the first label, second call replays the second label.
+     * And so on.
+     * 
+     * @param label1 - the first label to play.
+     * @param label2 - the second label to play.
+     *  
+     * @returns this object for chaining.
+     */
+    this.toggle = function(label1, label2){
+        
+        var status = toggles[label1+'_'+label2];
+        
+        if(status && status===1)
+        {
+            toggles[label1+'_'+label2] = 2;
+            this.replay(label2);
+        }
+        else
+        {
+            toggles[label1+'_'+label2] = 1;
+            this.replay(label1);
         }
         
         return this;
