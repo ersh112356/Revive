@@ -48,6 +48,11 @@ What do we need Revive for?
 
 
 Versions:
+10/3/2019
+* Version 1.3
+ * Added toggle() to allow toggling between two labels. First call will run the first label, second the second label, and so on.
+   See index_toggle.html for n example.
+   
 18/2/2019
 * Version 1.2
  * Added played and replayed changes on a few elements.
