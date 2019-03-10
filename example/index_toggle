@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Played a Bootstrap Template</title>
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional Bootstrap Theme -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container-fluid">
+        <!-- Insert/Drop Grid Row codes below -->
+        <div class="row">
+            <!-- Insert/Drop Grid Column codes below-->
+            <div class="col-xs-1">
+                <button id="click_me" type="button" class="btn btn-xs btn-default">Click-Me</button>
+                <button id="click_me_2" type="button" class="btn btn-xs btn-info">Second-Click</button>
+                <button id="click_me_3" type="button" class="btn btn-xs btn-info">Third-Click</button>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
+    <script src="js/postal.min.js"></script>
+    <script src="js/revive.js"></script>
+    <script>
+        $(document).ready(function(){
+            
+            $("#click_me_3").hide();
+            var states = [revive.asState("click_me"),revive.asState("click_me_2"),revive.asState("click_me_3")];
+            revive.play("my states",states);
+            
+            $("#click_me").attr("disabled","disabled");
+            //$("#click_me_3").removeAttr("disabled");
+            $("#click_me_3").show();
+            
+            states = [revive.asState("click_me"),revive.asState("click_me_2"),revive.asState("click_me_3")];
+            revive.play("my states 2",states);
+            
+            revive.on("click_me_2","click", function(){
+            
+                alert("Button states should change");
+                revive.toggle("my states","my states 2");
+            });
+	});
+    </script>
+  </body>
+</html>
