@@ -49,8 +49,9 @@ What do we need Revive for?
 
 Versions:
 11/3/2019
-* Versoin 1.3.1
+* Version 1.3.1
  * Bug fix.
+ 
 10/3/2019
 * Version 1.3
  * Added toggle() to allow toggling between two labels. First call will run the first label, second the second label, and so on.
