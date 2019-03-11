@@ -22,7 +22,7 @@ Main components:
 
 Revive- a short introduction:
 * Open source
-* Very light, only 14.4k (2.92k minified)
+* Very light, only 16.4k (3.29k minified)
 * Apache license
 * Learning carve
   * At top, we need only to invoke 
@@ -48,6 +48,9 @@ What do we need Revive for?
 
 
 Versions:
+11/3/2019
+* Versoin 1.3.1
+ * Bug fix.
 10/3/2019
 * Version 1.3
  * Added toggle() to allow toggling between two labels. First call will run the first label, second the second label, and so on.
