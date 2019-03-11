@@ -1,5 +1,5 @@
 /* 
- * Version 1.3
+ * Version 1.3.1
  *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
@@ -434,10 +434,17 @@ var Revive = function(brokerImpl){
         
         var states = played[label];
         
-        for(var i=0;i<states.length;i++)
+        if(states.length)
         {
-            var state = states[i];
-            restoreState(state);
+            for(var i=0;i<states.length;i++)
+            {
+                var state = states[i];
+                restoreState(state);
+            }
+        }
+        else
+        {   // Only one state.
+            restoreState(states);
         }
         
         return this;
