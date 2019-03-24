@@ -1,5 +1,5 @@
 /* 
- * Version 1.3
+ * Version 1.3.1
  *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
@@ -313,7 +313,6 @@ var Revive = function(brokerImpl){
             if(type==="click" && elem.attr("disabled"))
             {   // Disabled, just block the event.
                 // Actually, that's not needed and can be removed.
-                event.preventDefault();
                 
                 return;
             }
