@@ -3,17 +3,17 @@ A light event driven based framework
 
 A few words on Revive:
 * Revive- let’s take the good parts and get rid off the complexity 
-* SPA-Server based on Event Bus 
+* SPA based on Event Bus 
 * Messages are pushed toward the SPA via a WebSocket
 * Internal modules are communicating via internal Event Bus
 * Easy to save/restore states (we’ll get into this in details)
-* No need to pre-compilation 
+* No need for a pre-compilation 
 * Templates are welcome
-* Each module is realized by JQuery Widget
-* Open source (Apache licensee) 
+* Each module is realized by a JQuery Widget
+* Open source (Apache license) 
 
 Main components:
-* Postal bus (https://github.com/postaljs/postal.js), at your will, can be easily replace by others
+* Postal bus (https://github.com/postaljs/postal.js), at your will, can be easily replaced by others
 * Revive- to manage the flow of data
 * Revive- to manage the states (a light version of Redux- without all the hassle)
 * Revive- to manage the service discovery (a light version of a service discovery)
@@ -30,7 +30,7 @@ Revive- a short introduction:
     * revive.on(“id_of_click_me","click", function(){//…});
     * revive.emit(“channel_orders",“queue_clicks",{message:"blah",qty:21});
   * To handle states:
-    * revive.store(“lable_state_2", revive.asState("click_me"));
+    * revive.store(“label_state_2", revive.asState("click_me"));
     * revive.restoreAll(“label_state_2");
   * Support metadata via attributes
     * <button id="click_me_2" type="button" class="btn btn-xs btn-info disabled" revive-data='{"channel":"orders","topic":"clicks","data":{"sku":"blah","qty":21}}' revive-type="click">Second-Click</button>
