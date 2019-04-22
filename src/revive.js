@@ -1,5 +1,5 @@
 /* 
- * Version 1.3.1
+ * Version 1.3.2
  *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
@@ -321,6 +321,19 @@ var Revive = function(brokerImpl){
         });
         
         return this;
+    };
+    
+    /**
+     * A quick wrapper for removing events from an element.
+     * 
+     * @param id - the id of the element to remove from.
+     * @param type - the type of the event to remove.
+     * 
+     */
+    this.off = function(id, type){
+        
+        var elem = $("#"+id);
+        elem.off(type);
     };
     
     /**
