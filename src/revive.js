@@ -329,11 +329,14 @@ var Revive = function(brokerImpl){
      * @param id - the id of the element to remove from.
      * @param type - the type of the event to remove.
      * 
+     * @return this object for chaining.
      */
     this.off = function(id, type){
         
         var elem = $("#"+id);
         elem.off(type);
+        
+        return this;
     };
     
     /**
