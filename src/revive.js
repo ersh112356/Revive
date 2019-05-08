@@ -1,5 +1,5 @@
 /* 
- * Version 1.3.2
+ * Version 1.3.3
  *
  * A Controller object to run the lifecycle of a model.
  * Works in conjunction with Jquery.
@@ -51,7 +51,7 @@ var Revive = function(brokerImpl){
         
         return this;
     };
- 
+     
     /**
      * Try to emit the model with a new message.
      * 
@@ -64,29 +64,23 @@ var Revive = function(brokerImpl){
      */
     this.emit = function(channel, topic, data, callback){
         
-        if(callback)
-        {
-            var subscription = broker.subscribe({
-                channel: channel,
-                topic: topic+"_reply",
-                callback: function(data,envelope){
-                    subscription.unsubscribe();
-                    clearTimeout(t);
-                    callback(data,envelope);
-                }
-            });
-
-            // The reply is cleared after 30 seconds.
-            var t = setTimeout(function(){ 
-                subscription.unsubscribe();
-            }, TIMEOUT);
-        }
-        
-        broker.publish({
-            channel: channel,
+        var ch = broker.channel(channel);
+        ch.request({
             topic: topic,
-            data: data
-        });
+            data: data,
+            timeout: TIMEOUT
+        }).then(function(data){
+                if(callback)
+                {
+                    callback(data);
+                }
+            },function(err){
+                if(callback)
+                {
+                    callback(data);
+                }
+            }
+        );
         
         return this;
     };
@@ -126,12 +120,11 @@ var Revive = function(brokerImpl){
      */
     var applyNotIdentified = function(channel, topic, callback){
         
-        var subscription = broker.subscribe({
-            channel: channel,
-            topic: topic,
-            callback: function(data,envelope){
-                var en = new binder(envelope);
-                callback(data,en);
+        var ch = broker.channel(channel);
+        var subscription = ch.subscribe(topic,function(data, envelope){
+            if(callback)
+            {
+                callback(data,envelope);
             }
         });
         
@@ -159,12 +152,11 @@ var Revive = function(brokerImpl){
      */
     var applyIdentified = function(channel, topic, identification, callback){
         
-        var subscription = broker.subscribe({
-            channel: channel,
-            topic: topic,
-            callback: function(data,envelope){
-                var en = new binder(envelope);
-                callback(data,en);
+        var ch = broker.channel(channel);
+        var subscription = ch.subscribe(topic,function(data, envelope){
+            if(callback)
+            {
+                callback(data,envelope);
             }
         });
         
@@ -329,7 +321,6 @@ var Revive = function(brokerImpl){
      * @param id - the id of the element to remove from.
      * @param type - the type of the event to remove.
      * 
-     * @return this object for chaining.
      */
     this.off = function(id, type){
         
@@ -590,29 +581,6 @@ var Revive = function(brokerImpl){
         {   // Not exists, need to be removed. 
             elem.removeAttr(name);
         }
-    };
-    
-    /**
-     * An object to handle the functionality of a reply to a message.
-     * 
-     * @param envelope - the original envelope.
-     * 
-     * @returns the Binder objectg.
-     */
-    var binder = function(envelope){
-        
-        return {
-            channel : envelope.channel,
-            topic : envelope.topic,
-            timeStamp : envelope.timeStamp,
-            data : envelope.data,
-            reply : function(message){
-                 broker.publish({
-                    channel: envelope.channel,
-                    topic: envelope.topic+"_reply",
-                    data: message
-                });
-        }};
     };
 };
 
