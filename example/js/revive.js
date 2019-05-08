@@ -1,0 +1,629 @@
+/* 
+ * Version 1.3.3
+ *
+ * A Controller object to run the lifecycle of a model.
+ * Works in conjunction with Jquery.
+ * At default, Postal is used as the Broker, yet that can be customized.
+ * 
+ * @param broker- the broker that recieves messages. 
+ */
+var Revive = function(brokerImpl){
+ 
+    /** The value of the timeout (30 seconds) for replying to a message. */
+    var TIMEOUT = 30000;
+    /** Holds the states that are stored here. */
+    var states = {};
+    /** Holds the played states. */
+    var played = {};
+    /** Holds the status of toogles. */
+    var toggles = {};
+    /** Holds the broker. */
+    var broker = brokerImpl;
+    /** Holds the registered clients to the bus. */
+    var clients = {};
+    /** Holds the services to discover. */
+    var services = {};
+ 
+    /**
+     * Clean the store.
+     * 
+     * @return this object for chaining.
+     */
+    this.clear = function(){
+        
+        states = {};
+        played = {};
+        toggles = {};
+        
+        return this;
+    };
+    
+    /**
+     * Introduce a new broker here.
+     * 
+     * @param brokerImpl - the broker.
+     * 
+     * @return this object for chaining.
+     */
+    this.setBroker = function(brokerImpl){
+        
+        broker = brokerImpl;
+        
+        return this;
+    };
+     
+    /**
+     * Try to emit the model with a new message.
+     * 
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param data - the data to send to.
+     * @param callback - an optional callback to handle the reply to the message sent.
+     * 
+     * @return this object for chaining.
+     */
+    this.emit = function(channel, topic, data, callback){
+        
+        var ch = broker.channel(channel);
+        ch.request({
+            topic: topic,
+            data: data,
+            timeout: TIMEOUT
+        }).then(function(data){
+                if(callback)
+                {
+                    callback(data);
+                }
+            },function(err){
+                if(callback)
+                {
+                    callback(data);
+                }
+            }
+        );
+        
+        return this;
+    };
+    
+    /**
+     * Try to apply on a registration to the model.
+     * 
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param identification - the identification of the client. Optional.
+     * @param callback - the callback to apply by.
+     * 
+     * @return this object for chaining.
+     */
+    this.apply = function(channel, topic, identification, callback){
+        
+        if(typeof identification==='function')
+        {   // Actually we omitted the identification and provided with the callback.
+            applyNotIdentified(channel,topic,identification);
+        }
+        else
+        {
+            applyIdentified(channel,topic,identification,callback);
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Try to apply on a registration to the model.
+     * 
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param callback - the callback to apply by.
+     * 
+     * @return this object for chaining.
+     */
+    var applyNotIdentified = function(channel, topic, callback){
+        
+        var ch = broker.channel(channel);
+        var subscription = ch.subscribe(topic,function(data, envelope){
+            if(callback)
+            {
+                callback(data,envelope);
+            }
+        });
+        
+        var key = channel+"."+topic;
+        var arr = clients[key];
+        
+        if(!arr)
+        {
+            arr = [];
+        }
+        
+        arr.push(subscription);
+        clients[key] = arr;
+    };
+    
+    /**
+     * Try to apply on a registration to the model.
+     * 
+     * @param channel - the channel to register to.
+     * @param topic - the topic in the channel to register to.
+     * @param identification - the identification of the client.
+     * @param callback - the callback to apply by.
+     * 
+     * @return this object for chaining.
+     */
+    var applyIdentified = function(channel, topic, identification, callback){
+        
+        var ch = broker.channel(channel);
+        var subscription = ch.subscribe(topic,function(data, envelope){
+            if(callback)
+            {
+                callback(data,envelope);
+            }
+        });
+        
+        subscription.identification = identification;
+        var key = channel+"."+topic;
+        var arr = clients[key];
+        
+        if(!arr)
+        {
+            arr = [];
+        }
+        
+        arr.push(subscription);
+        clients[key] = arr;
+    };
+    
+    /**
+     * Try to unsubscribe to scpecified channel and topic.
+     * 
+     * @param channel - the channel to unsubscribe to.
+     * @param topic - the topic to unsubscribe to.
+     * @param identification - the identification of the client to remove. Optional.
+     * 
+     * @returns this object for chaining. 
+     */
+    this.unapply = function(channel, topic, identification){
+        
+        if(identification)
+        {
+            unapplyIdentified(channel,topic,identification);
+        }
+        else
+        {
+            unapplyNotIdentified(channel,topic);
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Try to unsubscribe to scpecified channel and topic.
+     * 
+     * @param channel - the channel to unsubscribe to.
+     * @param topic - the topic to unsubscribe to.
+     */
+    var unapplyNotIdentified = function(channel, topic){
+        
+        try
+        {
+            var key = channel+"."+topic;
+            var arr = clients[key];
+            
+            if(arr)
+            {
+                for(var i=0;i<arr.length;i++)
+                {
+                    arr[i].unsubscribe();
+                }
+            }
+            
+            clients[key] = [];
+        }
+        catch(error)
+        {
+        }
+    };
+    
+    /**
+     * Try to unsubscribe a given client from scpecified channel and topic.
+     * 
+     * @param channel - the channel to unsubscribe to.
+     * @param topic - the topic to unsubscribe to.
+     * @param identification - the identification of the client to remove.
+     */
+    var unapplyIdentified = function(channel, topic, identification){
+        
+        try
+        {
+            var key = channel+"."+topic;
+            var arr = clients[key];
+            
+            if(arr)
+            {
+                for(var i=0;i<arr.length;i++)
+                {
+                    var sb = arr[i];
+                    
+                    if(sb.identification===identification)
+                    {
+                        sb.unsubscribe();
+                        arr.splice(i,1);
+
+                        break;
+                    }
+                }
+            }
+        }
+        catch(error)
+        {
+        }
+    };
+    
+    /**
+     * Try to publish a new ID of an element.
+     * 
+     * @param label - the label that tied to the ID.
+     * @param elemID - the ID of an element.
+     * 
+     * @returns this to allow chaining.
+     */
+    this.publish = function(label ,elemID){
+        
+        services[label] = elemID;
+        
+        return this;
+    };
+    
+    /**
+     * Return the ID by its label.
+     * 
+     * @param label - the label to find by.
+     * 
+     * @returns the ID.
+     * 
+     */
+    this.getRecord = function(label){
+        
+        return services[label];
+    };
+    
+    /**
+     * A quick wrapper for catching events from an element.
+     * 
+     * @param id - the id of the element that triggers the event.
+     * @param type - the type of the event to catch.
+     * @param fn - the callback function.
+     * 
+     * @return this object for chaining.
+     */
+    this.on = function(id, type, fn){
+        
+        var elem = $("#"+id);
+        elem.on(type,function(event){
+            event.preventDefault();
+            
+            if(type==="click" && elem.attr("disabled"))
+            {   // Disabled, just block the event.
+                // Actually, that's not needed and can be removed.
+                
+                return;
+            }
+            
+            fn(event);
+        });
+        
+        return this;
+    };
+    
+    /**
+     * A quick wrapper for removing events from an element.
+     * 
+     * @param id - the id of the element to remove from.
+     * @param type - the type of the event to remove.
+     * 
+     */
+    this.off = function(id, type){
+        
+        var elem = $("#"+id);
+        elem.off(type);
+        
+        return this;
+    };
+    
+    /**
+     * Returns the state of a given element.
+     * 
+     * @param id - the id of the lement.
+     *  
+     * @return the state of a given element.
+     */
+    this.asState = function(id){
+        
+        var state = {};
+        var elem = $("#"+id);
+        state["html"] = elem.html();
+        state["text"] = elem.text();
+        state["css"] = elem.attr("style");
+        state["class"] = elem.attr("class");
+        state["id"] = id;
+        state["disabled"] = elem.attr("disabled");
+        state["src"] = elem.attr("src");
+        state["href"] = elem.attr("href");
+        state["width"] = elem.attr("width");
+        state["height"] = elem.attr("height");
+        state["alt"] = elem.attr("alt");
+        state["title"] = elem.attr("title");
+        state["checked"] = elem.attr("checked");
+        state["selected"] = elem.attr("selected");
+        state["visible"] = elem.is(':visible');
+        
+        return state;
+    };
+    
+    /**
+     * Add a new state to the store.
+     * Might be a single state, or multiple states.
+     * 
+     * @param label - the label tied to the state.
+     * @param state - the state itself.
+     * 
+     * @return this object for chaining.
+     */
+    this.store = function(label, state){
+        
+        states[label] = state;
+        
+        return this;
+    };
+    
+    /**
+     * Restore a batch of elements.
+     * 
+     * @param label - the label of the states to restore.
+     * 
+     * @return this object for chaining.
+     */
+    this.restoreAll = function(label){
+
+        var multiStates = states[label];
+        
+        try
+        {
+            multiStates.forEach(function(state){
+                restoreState(state);
+            });
+        }
+        catch(error)
+        {   // Die gracefully. That's probably due to one that's not defined well.
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Restore a specified state.
+     * 
+     * @param label - the label which is tied to the state.
+     * 
+     * @return this object for chaining.
+     */
+    this.restore = function(label){
+        
+        var state = states[label];
+        restoreState(state);
+        
+        return this;
+    };
+    
+    /**
+     * Start to recored a few states to be played later.
+     * 
+     * @param label - the label which is tied to the played states.
+     * @param states - a serial of states.
+     * 
+     * @return this object for chaining.
+     */
+    this.play = function(label, states){
+        
+        played[label] = states;
+        
+        return this;
+    };
+    
+    /**
+     * Replay stored states.
+     *  
+     * @param label - the label tied to the states.
+     * 
+     * @return this object for chaining.
+     */
+    this.replay = function(label){
+        
+        var states = played[label];
+        
+        if(states.length)
+        {
+            for(var i=0;i<states.length;i++)
+            {
+                var state = states[i];
+                restoreState(state);
+            }
+        }
+        else
+        {   // Only one state.
+            restoreState(states);
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Try to toggle between two labels.
+     * First call replays the first label, second call replays the second label.
+     * And so on.
+     * 
+     * @param label1 - the first label to play.
+     * @param label2 - the second label to play.
+     *  
+     * @returns this object for chaining.
+     */
+    this.toggle = function(label1, label2){
+        
+        var status = toggles[label1+'_'+label2];
+        
+        if(status && status===1)
+        {
+            toggles[label1+'_'+label2] = 2;
+            this.replay(label2);
+        }
+        else
+        {
+            toggles[label1+'_'+label2] = 1;
+            this.replay(label1);
+        }
+        
+        return this;
+    };
+    
+    /**
+     * Restore a given state.
+     * 
+     * @param state - the state to restore.
+     */
+    var restoreState = function(state){
+        
+        var id = state.id;
+        
+        if(state.html)
+        {
+            html(id,state.html);
+        }
+        else if(state.text)
+        {   // Both can't go thogether.
+            text(id,state.text);
+        }
+        
+        if(state.css)
+        {
+            css(id,state.css);
+        }
+        
+        if(state.visible)
+        {
+            $("#"+id).show();
+        }
+        else
+        {
+            $("#"+id).hide();
+        }
+        
+        sync(id,"class",state.class);
+        sync(id,"src",state.src);
+        sync(id,"href",state.href);
+        sync(id,"width",state.width);
+        sync(id,"height",state.height);
+        sync(id,"alt",state.alt);
+        sync(id,"title",state.title);
+        sync(id,"disabled",state.disabled);
+        sync(id,"checked",state.checked);
+        sync(id,"selected",state.selected);
+    };
+    
+    /**
+     * Set the html attribute into a given element.
+     * 
+     * @param id - the id of the element to set in.
+     * @param html - the html to set.
+     */
+    var html = function(id, html){
+
+        $("#"+id).html(html);
+    };
+    
+    /**
+     * Set the text attribute into a given element.
+     * 
+     * @param id - the id of the element to set in.
+     * @param text - the text to set.
+     */
+    var text = function(id, text){
+
+        $("#"+id).text(text);
+    };
+
+    /**
+     * Set css attribute into a given element.
+     * 
+     * @param id - the id of the element to set in.
+     * @param css - the css to add.
+     */
+    var css = function(id, css){
+
+        $("#"+id).css(css);
+    };
+    
+    /**
+     * Try to sync a given attribute into the element.
+     * 
+     * @param id - the id of the element.
+     * @param name - the name of the attribute.
+     * @param attr - the attribute itself.
+     */
+    var sync = function(id, name, attr){
+        
+        var elem = $("#"+id);
+        
+        if(attr)
+        {   // Should exist, we need to sync into the element.
+            elem.attr(name,attr);
+        }
+        else
+        {   // Not exists, need to be removed. 
+            elem.removeAttr(name);
+        }
+    };
+};
+
+// Create a new instance of Revivve.
+// Please not, this creates a dependency on Pastal, so it might be removed..
+revive = new Revive(this.postal);
+/**
+ * That's an elegant way of an implementation for revive.on(), above.
+ */
+(function(){ 
+    var elements = document.querySelectorAll('[revive-data]');
+    
+    if(elements)
+    {
+        for(var i=0;i<elements.length;i++)
+        {
+            var data = elements[i].getAttribute('revive-data');
+            var fn = elements[i].getAttribute('revive-fn');
+            var id = elements[i].getAttribute('id');
+            var type = elements[i].getAttribute('revive-type');
+            
+            if(fn)
+            {   
+                revive.on(id,type,function(event){
+                    // That will only work if the function is declared global.
+                    // AKA, window.fn = function().
+                    var fun = window[fn];
+
+                    if(typeof fun==='function')
+                    {
+                        fun(event,data);
+                        event.preventDefault();
+                    } 
+                });
+            }
+            else
+            {   // Will trigger firing a message on click.
+                var json = JSON.parse(data);
+                
+                revive.on(id,type,function(event){
+                    revive.emit(json.channel,json.topic,json.data);
+                });
+            }
+        }
+    }
+})();
