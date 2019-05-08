@@ -48,6 +48,11 @@ What do we need Revive for?
 
 
 Versions:
+8/5/2019
+* Version 1.3.2/1.3.3
+ * The mechanism of reply to a message was replaced.
+ * Bug fix.
+
 11/3/2019
 * Version 1.3.1
  * Bug fix.
