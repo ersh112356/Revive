@@ -10,6 +10,7 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
     <script type="text/javascript" src="js/postal.min.js"></script>
+    <script type="text/javascript" src="js/postal.request-response.js"></script>
     <script type="text/javascript" src="js/revive.js"></script>
     <script>
         // Declare a new Revive object that runs the full lifecycle of a model.
@@ -17,10 +18,13 @@
         //var revive = new Revive(this.postal);
 
         $(document).ready(function(){
-            
-            revive.apply("orders","clicks.1",function(data,envelope){
+ 
+            revive.apply("orders","clicks.1",function(data,envelope){console.log("in clicks.1 (1): ");
                 alert("in clicks.1 (1): "+data.sku+" "+JSON.stringify(envelope));
-                envelope.reply({"error":0});
+                
+                setTimeout(function(){ 
+                        envelope.reply({"error":0});
+                    }, 3100);
             });
                
             revive.apply("orders","clicks.1",function(data,envelope){
@@ -36,9 +40,16 @@
             
             // Removes all apply calls.
             //revive.unapply("orders","clicks.1");
+            
             revive.emit("orders","clicks.1",{sku:"blah",qty:21},function(data,envelope){
                 alert("got a reply back from the reciever "+JSON.stringify(data));
             });
+            
+            revive.apply("orders","clicks.1","my client",function(data,envelope){
+                alert("in clicks.1 (4): "+data.sku+" "+JSON.stringify(envelope));
+            });
+            
+            revive.emit("orders","clicks.1",{sku:"blah",qty:22});
 	});
     </script>
   </body>
